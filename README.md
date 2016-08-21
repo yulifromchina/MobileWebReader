@@ -12,9 +12,9 @@ http://htmlpreview.github.io/?https://github.com/yulifromchina/MobileWebReader/b
 4. 实现滚动，上下边栏浮现/消失的功能
 
 ##使用插件：
-zepto.js
-jquery.base64.js
-jquery.jsonp.js
+* zepto.js
+* jquery.base64.js
+* jquery.jsonp.js
 
 #阅读器1.1：
 1. 背景色的变换功能优化，使用事件委托的方式
