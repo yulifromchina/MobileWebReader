@@ -298,19 +298,19 @@
 				</div>
 				<div class="child-pannel color-pannel">
 					<span class="color-change">颜色</span>
-					<div class="icon-color-bar color1">
+					<div class="icon-color-bar color1" id="color1">
 						<div class="color1-bk"></div>
 					</div>
-					<div class="icon-color-bar color2">
+					<div class="icon-color-bar color2" id="color2">
 						<div class="color2-bk"></div>
 					</div>
-					<div class="icon-color-bar color3">
+					<div class="icon-color-bar color3" id="color3">
 						<div class="color3-bk"></div>
 					</div>
-					<div class="icon-color-bar color4">
+					<div class="icon-color-bar color4" id="color4">
 						<div class="color4-bk"></div>
 					</div>
-					<div class="icon-color-bar color5">
+					<div class="icon-color-bar color5" id="color5">
 						<div class="color5-bk"></div>
 					</div>
 				</div>
@@ -343,6 +343,7 @@
 
 		<script>
 			(function(){
+				'use strict'
 				// 数据存储部分
 
 				var Util = (function(){
@@ -368,9 +369,48 @@
 						});
 					}
 
+					// 事件委托的函数
+					var addHandler = function(element, type, handler){
+						if(element.addEventListener){
+							element.addEventListener(type, handler, false);
+						}else if(element.attachEvent){
+							element.attachEvent('on'+type, handler);
+						}else{
+							element['on'+type] = handler;
+						}
+					};
+
+					var getEvent = function(event){
+						return event? event:window.event;
+					}
+
+					var getTarget = function(event){
+						return event.target || event.srcElement;
+					}
+
+					var changeBkColor = function(BkColor){
+						initBkColor = BkColor;
+						Dom.fiction_area.css('background-color',initBkColor);
+						Util.StorageSetter('background-color',initBkColor);
+					}
+
+					var changeBkClass = function(target_id){
+						Dom.color1_bk.removeClass('icon-color-current');
+						Dom.color2_bk.removeClass('icon-color-current');
+						Dom.color3_bk.removeClass('icon-color-current');
+						Dom.color4_bk.removeClass('icon-color-current');
+						Dom.color5_bk.removeClass('icon-color-current');
+
+						$('.'+target_id+'-bk').addClass('icon-color-current');
+					}
 					
 					return {
 						getJSONP:getJSONP,
+						addHandler:addHandler,
+						getEvent:getEvent,
+						getTarget:getTarget,
+						changeBkColor:changeBkColor,
+						changeBkClass:changeBkClass,
 						StorageSetter:StorageSetter,
 						StorageGetter:StorageGetter
 					}
@@ -434,6 +474,7 @@
 							getSingleChapterInfo(data, callbackFun);
 						});
 					}
+
 
 					var getFictionInfo = function(callback){
 						$.get('data/chapter.json', function(data){
@@ -538,6 +579,7 @@
 							Dom.bottom_nav.hide();
 							Dom.pannel_control.hide();		
 						}
+						Dom.font_button.removeClass('current');
 					});
 
 					// 滚动页面，上下边栏消失，控制面板消失
@@ -545,7 +587,8 @@
 						console.log('you scrolled the screen.');
 						Dom.top_nav.hide();
 						Dom.bottom_nav.hide();	
-						Dom.pannel_control.hide();				
+						Dom.pannel_control.hide();		
+						Dom.font_button.removeClass('current');		
 					});
 
 					// 点击字体，控制面板出现或隐藏
@@ -568,6 +611,7 @@
 						initBkColor = '#283548';
 						Dom.fiction_area.css('background-color',initBkColor)
 						Util.StorageSetter('background-color',initBkColor);
+						Dom.font_button.removeClass('current');
 
 					});
 
@@ -579,6 +623,7 @@
 						initBkColor = '#f7eee5';
 						Dom.fiction_area.css('background-color',initBkColor)
 						Util.StorageSetter('background-color',initBkColor);
+						Dom.font_button.removeClass('current');
 					});
 
 					// 放大或缩小字体
@@ -603,60 +648,36 @@
 					});
 
 					// 设置背景色
-					$('.color1').click(function(){
-						initBkColor = '#f7eee5';
-						Dom.fiction_area.css('background-color',initBkColor);
-						Util.StorageSetter('background-color',initBkColor);
-						Dom.color1_bk.addClass('icon-color-current');
+					// 使用事件委托的方式
+					Util.addHandler($('.color-pannel')[0], 'click', function(event){
+						var event = Util.getEvent(event);
+						// debugger;
+						var target = Util.getTarget(event);
 
-						Dom.color2_bk.removeClass('icon-color-current');
-						Dom.color3_bk.removeClass('icon-color-current');
-						Dom.color4_bk.removeClass('icon-color-current');
-						Dom.color5_bk.removeClass('icon-color-current');
-					});
-					$('.color2').click(function(){
-						initBkColor = '#e9dfc7;';
-						Dom.fiction_area.css('background-color',initBkColor);
-						Util.StorageSetter('background-color',initBkColor);
-						Dom.color2_bk.addClass('icon-color-current');
-
-						Dom.color1_bk.removeClass('icon-color-current');
-						Dom.color3_bk.removeClass('icon-color-current');
-						Dom.color4_bk.removeClass('icon-color-current');
-						Dom.color5_bk.removeClass('icon-color-current');						
-					});
-					$('.color3').click(function(){
-						initBkColor = '#a4a4a4';
-						Dom.fiction_area.css('background-color',initBkColor);
-						Util.StorageSetter('background-color',initBkColor);
-						Dom.color3_bk.addClass('icon-color-current');
-
-						Dom.color2_bk.removeClass('icon-color-current');
-						Dom.color1_bk.removeClass('icon-color-current');
-						Dom.color4_bk.removeClass('icon-color-current');
-						Dom.color5_bk.removeClass('icon-color-current');						
-					});
-					$('.color4').click(function(){
-						initBkColor = '#cdefce';
-						Dom.fiction_area.css('background-color',initBkColor);
-						Util.StorageSetter('background-color',initBkColor);
-						Dom.color4_bk.addClass('icon-color-current');
-
-						Dom.color2_bk.removeClass('icon-color-current');
-						Dom.color3_bk.removeClass('icon-color-current');
-						Dom.color1_bk.removeClass('icon-color-current');
-						Dom.color5_bk.removeClass('icon-color-current');						
-					});
-					$('.color5').click(function(){
-						initBkColor = '#283548';
-						Dom.fiction_area.css('background-color',initBkColor);
-						Util.StorageSetter('background-color',initBkColor);
-						Dom.color5_bk.addClass('icon-color-current');
-
-						Dom.color2_bk.removeClass('icon-color-current');
-						Dom.color3_bk.removeClass('icon-color-current');
-						Dom.color4_bk.removeClass('icon-color-current');
-						Dom.color1_bk.removeClass('icon-color-current');						
+						switch(target.id){
+							case 'color1':
+								Util.changeBkColor('#f7eee5');
+								Util.changeBkClass(target.id);
+								break;
+							case 'color2':
+								Util.changeBkColor('#e9dfc7');
+								Util.changeBkClass(target.id);
+								break;
+							case 'color3':
+								Util.changeBkColor('#a4a4a4');
+								Util.changeBkClass(target.id);
+								break;
+							case 'color4':
+								Util.changeBkColor('#cdefce');
+								Util.changeBkClass(target.id);
+								break;
+							case 'color5':
+								Util.changeBkColor('#283548');
+								Util.changeBkClass(target.id);
+								break;
+							default:
+								break;
+						}
 					});
 
 				}
